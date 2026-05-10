@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegram-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: telegram-support-bot
+    component: config
+    {{- range $k, $v := .Values.labels }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+    {{- if .Values.environment }}
+    environment: {{ .Values.environment | quote }}
+    {{- end }}
+  annotations:
+    description: "Configuration for Telegram Support Bot (application only)"
+data:
+  SERVER_PORT: "8080"
+  SERVER_HOST: "0.0.0.0"
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  NEXT_PUBLIC_API_URL: {{ .Values.config.nextPublicApiUrl | quote }}

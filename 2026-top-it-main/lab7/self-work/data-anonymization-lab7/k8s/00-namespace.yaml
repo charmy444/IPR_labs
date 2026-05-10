@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sda-observability
+  labels:
+    app.kubernetes.io/name: sda-observability
+    course.lab: "7"
+

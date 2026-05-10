@@ -1,0 +1,20 @@
+# Prod-подобные значения: больше диска и памяти.
+# Пароль НЕ храните в Git — передайте при установке:
+#   helm upgrade --install ... -f values-prod.yaml --set password="$PG_PASSWORD"
+# или используйте существующий Secret (доработайте чарт при необходимости).
+
+password: "REPLACE_WITH_SECRET_FROM_CI"
+
+persistence:
+  size: 10Gi
+
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 250m
+  limits:
+    memory: 1536Mi
+    cpu: "1"
+
+podLabels:
+  environment: prod

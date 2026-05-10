@@ -1,0 +1,27 @@
+environment: prod
+
+frontend:
+  replicas: 2
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: "1"
+
+backend:
+  replicas: 2
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: "1"
+
+# Приложение в namespace релиза (например telegram-prod), БД остаётся в telegram-demo — полный FQDN.
+database:
+  url: "postgres://postgres:postgres@postgres-0.postgres.telegram-demo.svc.cluster.local:5432/support_bot?sslmode=disable"
+  host: ""
+  password: postgres

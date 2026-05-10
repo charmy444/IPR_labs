@@ -1,0 +1,6 @@
+storage:
+  upload:
+    size: 5Gi
+  analysis:
+    size: 5Gi
+

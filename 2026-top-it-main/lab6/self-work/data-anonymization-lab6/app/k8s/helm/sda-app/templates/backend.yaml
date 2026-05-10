@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sda-backend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: sda
+    app.kubernetes.io/component: backend
+    {{- if .Values.environment }}
+    environment: {{ .Values.environment | quote }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sda
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sda
+        app.kubernetes.io/component: backend
+        {{- if .Values.environment }}
+        environment: {{ .Values.environment | quote }}
+        {{- end }}
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: sda-config
+            - secretRef:
+                name: sda-secret
+          volumeMounts:
+            - name: upload-store
+              mountPath: /tmp/sda_upload_store
+            - name: analysis-store
+              mountPath: /tmp/sda_similar_analysis_store
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: upload-store
+          persistentVolumeClaim:
+            claimName: {{ .Values.backend.storage.uploadClaimName }}
+        - name: analysis-store
+          persistentVolumeClaim:
+            claimName: {{ .Values.backend.storage.analysisClaimName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sda-backend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: sda
+    app.kubernetes.io/component: backend
+spec:
+  selector:
+    app.kubernetes.io/name: sda
+    app.kubernetes.io/component: backend
+  ports:
+    - name: http
+      port: {{ .Values.backend.service.port }}
+      targetPort: http
+  type: ClusterIP
+

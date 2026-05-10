@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-frontend
+  labels:
+    app: telegram-support-bot
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: telegram-support-bot
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: telegram-support-bot
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: telegram-support-bot-frontend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://telegram-backend:8080"
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

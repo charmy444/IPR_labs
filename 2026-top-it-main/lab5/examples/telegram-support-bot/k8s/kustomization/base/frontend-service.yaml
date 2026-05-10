@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-frontend
+  labels:
+    app: telegram-support-bot
+    component: frontend
+spec:
+  selector:
+    app: telegram-support-bot
+    component: frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+  type: ClusterIP

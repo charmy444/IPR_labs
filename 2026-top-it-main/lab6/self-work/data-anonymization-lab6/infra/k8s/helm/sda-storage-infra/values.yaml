@@ -1,0 +1,14 @@
+labels:
+  app.kubernetes.io/name: sda
+  app.kubernetes.io/component: storage
+
+storage:
+  upload:
+    name: sda-upload-store
+    size: 1Gi
+  analysis:
+    name: sda-analysis-store
+    size: 1Gi
+  accessModes:
+    - ReadWriteOnce
+

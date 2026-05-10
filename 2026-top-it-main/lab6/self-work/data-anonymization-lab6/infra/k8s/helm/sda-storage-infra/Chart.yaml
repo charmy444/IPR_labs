@@ -1,0 +1,7 @@
+apiVersion: v2
+name: sda-storage-infra
+description: Local PVC infrastructure for SDA upload and analysis stores
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+

@@ -1,0 +1,23 @@
+# ServiceMonitor для backend приложения telegram-support-bot.
+# Применять в том же namespace, где развёрнут Service telegram-backend (например telegram-demo).
+#
+#   kubectl apply -f servicemonitor-backend.yaml -n telegram-demo
+#
+# Убедитесь, что у Service есть порт с именем "http" (см. эталон в lab5/examples/telegram-support-bot/k8s).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: telegram-support-backend
+  labels:
+    app: telegram-support-bot
+    component: backend
+spec:
+  selector:
+    matchLabels:
+      app: telegram-support-bot
+      component: backend
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

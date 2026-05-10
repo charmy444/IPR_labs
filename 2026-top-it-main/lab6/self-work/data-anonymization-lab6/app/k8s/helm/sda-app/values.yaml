@@ -1,0 +1,59 @@
+environment: ""
+
+labels:
+  app.kubernetes.io/name: sda
+
+config:
+  corsOrigins: "http://localhost:3000,http://127.0.0.1:3000,http://sda.local"
+  otelServiceName: sda-backend
+  otelExporterOtlpEndpoint: ""
+
+secret:
+  demoSecretKey: local-lab-secret
+
+backend:
+  image:
+    repository: sda-backend
+    tag: local
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    port: 8000
+  storage:
+    uploadClaimName: sda-upload-store
+    analysisClaimName: sda-analysis-store
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+
+frontend:
+  image:
+    repository: sda-frontend
+    tag: local
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: sda.local
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  averageUtilization: 70
+

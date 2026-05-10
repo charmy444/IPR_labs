@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sda-config
+  namespace: sda-lab5
+  labels:
+    app.kubernetes.io/name: sda
+data:
+  SDA_CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://sda.local"
+  OTEL_SERVICE_NAME: "sda-backend"
+

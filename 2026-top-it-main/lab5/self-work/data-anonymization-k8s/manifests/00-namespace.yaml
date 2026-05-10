@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sda-lab5
+  labels:
+    app.kubernetes.io/name: sda
+    course.lab: "5"
+

@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: telegram-support-bot-vs
+  labels:
+    app: telegram-support-bot
+    component: virtualservice
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - telegram-support-bot-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: telegram-frontend
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /api
+      route:
+        - destination:
+            host: telegram-backend
+            port:
+              number: 8080

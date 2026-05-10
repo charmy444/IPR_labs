@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-backend
+  labels:
+    app: telegram-support-bot
+    component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: telegram-support-bot
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: telegram-support-bot
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: telegram-support-bot-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-secrets
+                  key: bot-token
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-secrets
+                  key: database-url
+            - name: SERVER_PORT
+              value: "8080"
+            - name: SERVER_HOST
+              value: "0.0.0.0"
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5

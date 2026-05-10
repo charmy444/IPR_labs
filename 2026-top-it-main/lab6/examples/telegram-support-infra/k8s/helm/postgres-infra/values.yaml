@@ -1,0 +1,34 @@
+# Базовые значения. Для окружений используйте values-dev.yaml / values-prod.yaml.
+
+fullnameOverride: postgres
+
+image:
+  repository: postgres
+  tag: "15-alpine"
+  pullPolicy: IfNotPresent
+
+auth:
+  username: postgres
+  database: support_bot
+
+# Пароль для POSTGRES_PASSWORD. В проде задавайте через CI/CD или External Secrets.
+password: "changeme"
+
+persistence:
+  enabled: true
+  size: 2Gi
+  storageClass: ""
+
+service:
+  port: 5432
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+podLabels: {}
+podAnnotations: {}

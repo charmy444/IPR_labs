@@ -1,0 +1,74 @@
+services:
+  backend:
+    build:
+      context: ../../../data-anonymization-and-synthesis-tool228
+      dockerfile: dockerfiles/backend.Dockerfile
+    environment:
+      SDA_CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      OTEL_SERVICE_NAME: sda-backend
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318/v1/traces
+    ports:
+      - "8000:8000"
+    volumes:
+      - sda-upload-store:/tmp/sda_upload_store
+      - sda-analysis-store:/tmp/sda_similar_analysis_store
+    depends_on:
+      - tempo
+
+  frontend:
+    build:
+      context: ../../../data-anonymization-and-synthesis-tool228
+      dockerfile: dockerfiles/frontend.prebuilt.Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    ports:
+      - "19090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - backend
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    command:
+      - -config.file=/etc/tempo.yaml
+    ports:
+      - "13200:3200"
+      - "14318:4318"
+      - "14317:4317"
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/tmp/tempo
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "13001:3000"
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - tempo
+
+volumes:
+  sda-upload-store:
+  sda-analysis-store:
+  prometheus-data:
+  tempo-data:
+  grafana-data:
